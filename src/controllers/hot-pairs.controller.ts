@@ -2,36 +2,43 @@ import { Request, Response } from "express";
 
 export const getHotPairs = async (req: Request, res: Response) => {
   try {
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("X-API-KEY", "BQYk6LYFsSq5Fv8CazRDoSTJP9fUTzgX");
-  myHeaders.append("Authorization", "Bearer ory_at_qWP0d6U2qVTdu7Ls29zgUt6GQmxcyy9Qnalg8EjISY8.IgZILDfCMHgbpUBqvIHjzMaj09Ywyf32yem-zVa3Tnk");
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("X-API-KEY", "BQYk6LYFsSq5Fv8CazRDoSTJP9fUTzgX");
+    myHeaders.append("Authorization", "Bearer ory_at_qWP0d6U2qVTdu7Ls29zgUt6GQmxcyy9Qnalg8EjISY8.IgZILDfCMHgbpUBqvIHjzMaj09Ywyf32yem-zVa3Tnk");
 
-  var raw = JSON.stringify({
-    "query": "{\
-      ethereum(network: ethereum) {\
-        arguments(\
-          options: {desc: [\"block.height\", \"index\"], limit: 5}\
-          smartContractAddress: {in: \"0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f\"}\
-          smartContractEvent: {is: \"PairCreated\"}\
-        ) {\
-          block {\
-            height\
-            timestamp {\
-              time(format: \"%Y-%m-%d %H:%M:%S\")\
+    var raw = JSON.stringify({
+      "query": "{\
+        ethereum(network: ethereum) {\
+          arguments(\
+            options: {desc: [\"block.height\", \"index\"], limit: 5}\
+            smartContractAddress: {in: \"0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f\"}\
+            smartContractEvent: {is: \"PairCreated\"}\
+          ) {\
+            block {\
+              height\
+              timestamp {\
+                time(format: \"%Y-%m-%d %H:%M:%S\")\
+              }\
             }\
+            index\
+            pair: any(of: argument_value, argument: {is: \"pair\"})\
+            token0: any(of: argument_value, argument: {is: \"token0\"})\
+            token0Name: any(of: argument_value, argument: {is: \"token0\"}, as: token_name)\
+            token1: any(of: argument_value, argument: {is: \"token1\"})\
+            token1Name: any(of: argument_value, argument: {is: \"token1\"}, as: token_name)\
           }\
-          index\
-          pair: any(of: argument_value, argument: {is: \"pair\"})\
-          token0: any(of: argument_value, argument: {is: \"token0\"})\
-          token0Name: any(of: argument_value, argument: {is: \"token0\"}, as: token_name)\
-          token1: any(of: argument_value, argument: {is: \"token1\"})\
-          token1Name: any(of: argument_value, argument: {is: \"token1\"}, as: token_name)\
         }\
-      }\
-    }",
-    "variables": "{}"
-  });
+      }",
+      "variables": "{\
+        \"limit\": 10,\
+        \"offset\": 0,\
+        \"network\": \"ethereum\",\
+        \"from\": \"2024-01-31\",\
+        \"till\": \"2024-01-31T23:59:59.999Z\",\
+        \"dateFormat\": \"%Y-%m-%d\"\
+      }"
+    });
 
   var requestOptions : any = {
     method: 'POST',
@@ -41,17 +48,17 @@ export const getHotPairs = async (req: Request, res: Response) => {
   };
   fetch("https://graphql.bitquery.io", requestOptions)
     .then(response => response.text())
-    .then(res => {
-      const result = JSON.parse(res);
+    .then(resp => {
+      const result = JSON.parse(resp);
       const pairs = result.data.ethereum.arguments;
       console.log(pairs)
-
+      res.status(201).json({
+        message: "ok",
+        data: pairs
+      });
     })
     .catch(error => console.log('error', error));
 
-    res.status(201).json({
-      message: "ok"
-    });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
