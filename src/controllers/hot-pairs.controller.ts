@@ -34,6 +34,12 @@ export const getHotPairs = async (req: Request, res: Response) => {
                 address\
               }\
             }\
+            index\
+            pair: any(of: argument_value, argument: {is: \"pair\"})\
+            token0: any(of: argument_value, argument: {is: \"token0\"})\
+            token0Name: any(of: argument_value, argument: {is: \"token0\"}, as: token_name)\
+            token1: any(of: argument_value, argument: {is: \"token1\"})\
+            token1Name: any(of: argument_value, argument: {is: \"token1\"}, as: token_name)\
           }\
         }"
         ,
