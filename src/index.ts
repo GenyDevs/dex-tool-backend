@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { wrappedResponse } from "./utility/functions";
 import HotpairsRouter from "./routes/hotpairs";
 import DexTradesRouter from "./routes/dextrades";
+import NewRouter from "./routes/new";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/hot-pairs", HotpairsRouter);
 app.use("/dex-trades", DexTradesRouter );
+app.use("/new-func", NewRouter);
 
 
 app.use("*", (_: Request, res: Response) => {
